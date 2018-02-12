@@ -11,13 +11,13 @@ void print_usage(const char *program)
 
 int main(int argc, char **argv)
 {
-	int        error = 0;
-	int        i = 0;
-	stl_axis_t axis = STL_AXIS_UNKNOWN;
-	float      degrees = 0.0;
-	char       *input_file = NULL;
-	char       *output_file = NULL;
-	stl_t      *stl = NULL;
+	stl_error_t error = STL_SUCCESS;
+	int         i = 0;
+	stl_axis_t  axis = STL_AXIS_UNKNOWN;
+	float       degrees = 0.0;
+	char        *input_file = NULL;
+	char        *output_file = NULL;
+	stl_t       *stl = NULL;
 
 	if(argc != 9)
 	{

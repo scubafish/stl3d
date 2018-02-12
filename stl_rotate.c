@@ -89,19 +89,22 @@ static unsigned short stl_pack_le16(
 /* Takes a 32 bit integer in the platform's native endianness and converts
  * it to a 4 character array in little endian format suitable for writing to disc.
  */
-static int stl_unpack_le32(const unsigned int val, unsigned char *buffer)
+static stl_error_t stl_unpack_le32(const unsigned int val, unsigned char *buffer)
 {
-	int error = STL_SUCCESS;
+	stl_error_t error = STL_SUCCESS;
 
 	if(NULL == buffer)
 	{
-		return STL_LOG_ERR(STL_ERROR_INVALID_ARG);
+		error = STL_LOG_ERR(STL_ERROR_INVALID_ARG);
 	}
 
-	buffer[0] = (unsigned char)((val >> 0) & 0xFF);
-	buffer[1] = (unsigned char)((val >> 8) & 0xFF);
-	buffer[2] = (unsigned char)((val >> 16) & 0xFF);
-	buffer[3] = (unsigned char)((val >> 24) & 0xFF);
+	if(STL_SUCCESS == error)
+	{
+		buffer[0] = (unsigned char)((val >> 0) & 0xFF);
+		buffer[1] = (unsigned char)((val >> 8) & 0xFF);
+		buffer[2] = (unsigned char)((val >> 16) & 0xFF);
+		buffer[3] = (unsigned char)((val >> 24) & 0xFF);
+	}
 
 	return STL_LOG_ERR(error);
 }
@@ -109,17 +112,20 @@ static int stl_unpack_le32(const unsigned int val, unsigned char *buffer)
 /* Takes a 16 bit integer in the platform's native endianness and converts
  * it to a 2 character array in little endian format suitable for writing to disc.
  */
-static int stl_unpack_le16(const unsigned short val, unsigned char *buffer)
+static stl_error_t stl_unpack_le16(const unsigned short val, unsigned char *buffer)
 {
-	int error = STL_SUCCESS;
+	stl_error_t error = STL_SUCCESS;
 
 	if(NULL == buffer)
 	{
-		return STL_LOG_ERR(STL_ERROR_INVALID_ARG);
+		error = STL_LOG_ERR(STL_ERROR_INVALID_ARG);
 	}
 
-	buffer[0] = (unsigned char)((val >> 0) & 0xFF);
-	buffer[1] = (unsigned char)((val >> 8) & 0xFF);
+	if(STL_SUCCESS == error)
+	{
+		buffer[0] = (unsigned char)((val >> 0) & 0xFF);
+		buffer[1] = (unsigned char)((val >> 8) & 0xFF);
+	}
 
 	return STL_LOG_ERR(error);
 }
@@ -140,11 +146,11 @@ void stl_free(stl_t *stl)
 	free(stl);
 }
 
-static int stl_read_next_triplet(FILE *fp, triplet_t *triplet)
+static stl_error_t stl_read_next_triplet(FILE *fp, triplet_t *triplet)
 {
-	int error = STL_SUCCESS;
-	int res = 0;
-	float vals[3];
+	stl_error_t error = STL_SUCCESS;
+	int         res = 0;
+	float       vals[3];
 
 	if((NULL == fp) || (NULL == triplet))
 	{
@@ -170,9 +176,9 @@ static int stl_read_next_triplet(FILE *fp, triplet_t *triplet)
 	return STL_LOG_ERR(error);
 }
 
-static int stl_read_next_facet(FILE *fp, facet_t *facet)
+static stl_error_t stl_read_next_facet(FILE *fp, facet_t *facet)
 {
-	int           error = STL_SUCCESS;
+	stl_error_t   error = STL_SUCCESS;
 	int           res = 0;
 	unsigned char buffer[48];
 	float         vals[3];
@@ -220,9 +226,9 @@ static int stl_read_next_facet(FILE *fp, facet_t *facet)
 	return STL_LOG_ERR(error);
 }
 
-int stl_read_file(char *input_file, stl_t **stl_new)
+stl_error_t stl_read_file(char *input_file, stl_t **stl_new)
 {
-	int           error = STL_SUCCESS;
+	stl_error_t   error = STL_SUCCESS;
 	FILE          *fp;
 	int           i = 0;
 	int           res = 0;
@@ -331,11 +337,11 @@ int stl_read_file(char *input_file, stl_t **stl_new)
 	return STL_LOG_ERR(error);
 }
 
-static int stl_write_next_triplet(FILE *fp, triplet_t *triplet)
+static stl_error_t stl_write_next_triplet(FILE *fp, triplet_t *triplet)
 {
-	int error = STL_SUCCESS;
-	int res = 0;
-	float vals[3];
+	stl_error_t error = STL_SUCCESS;
+	int         res = 0;
+	float       vals[3];
 
 	if((NULL == fp) || (NULL == triplet))
 	{
@@ -359,9 +365,9 @@ static int stl_write_next_triplet(FILE *fp, triplet_t *triplet)
 
 }
 
-static int stl_write_next_facet(FILE *fp, facet_t *facet)
+static stl_error_t stl_write_next_facet(FILE *fp, facet_t *facet)
 {
-	int           error = STL_SUCCESS;
+	stl_error_t   error = STL_SUCCESS;
 	int           res = 0;
 //	unsigned char buffer[48];
 	float         vals[3];
@@ -409,12 +415,12 @@ static int stl_write_next_facet(FILE *fp, facet_t *facet)
 	return STL_LOG_ERR(error);
 }
 
-int stl_write_file(char *output_file, stl_t *stl)
+stl_error_t stl_write_file(char *output_file, stl_t *stl)
 {
-	int      error = STL_SUCCESS;
-	int      res = 0;
-	int      i = 0;
-	FILE     *fp = NULL;
+	stl_error_t  error = STL_SUCCESS;
+	int           res = 0;
+	int           i = 0;
+	FILE          *fp = NULL;
 	unsigned char buffer[4];
 
 	if((NULL == output_file) || (NULL == stl))
@@ -506,13 +512,13 @@ static void _rot_vec(double cs, double sn, float *f1, float *f2)
 
 }
 
-int stl_rotate(stl_axis_t axis, float degrees, stl_t *stl)
+stl_error_t stl_rotate(stl_axis_t axis, float degrees, stl_t *stl)
 {
-	int    error = STL_SUCCESS;
-	int    i = 0;
-	double radians = 0.0;
-	double cs = 0.0;
-	double sn = 0.0;
+	stl_error_t error = STL_SUCCESS;
+	int         i = 0;
+	double      radians = 0.0;
+	double      cs = 0.0;
+	double      sn = 0.0;
 
 	if(NULL == stl)
 	{

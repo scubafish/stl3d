@@ -15,6 +15,9 @@ extern "C"{
 #define STL_ERROR_IO_ERROR     2
 #define STL_ERROR_MEMORY_ERROR 3
 
+typedef unsigned int stl_error_t;
+
+
 /* The axis that the action will be performed around
  */
 #define STL_AXIS_UNKNOWN 0
@@ -71,18 +74,18 @@ int _log_err(int error, char *file, int line);
 
 /* Open and read an STL file into an STL object
  */
-int stl_read_file(char *input_file, stl_t **stl_new);
+stl_error_t stl_read_file(char *input_file, stl_t **stl_new);
 
 /* Create and write a new STL file using the supplied
  * STL object. This function will fail if the output
  * file already exists.
  */
-int stl_write_file(char *output_file, stl_t *stl);
+stl_error_t stl_write_file(char *output_file, stl_t *stl);
 
 /* Rotate the STL object along the specified axis the specified
  * number of degrees.
  */
-int stl_rotate(stl_axis_t axis, float degrees, stl_t *stl);
+stl_error_t stl_rotate(stl_axis_t axis, float degrees, stl_t *stl);
 
 /* Print to stdout the elements of the STL object
  */
