@@ -62,15 +62,27 @@ int _log_err(int error, char *file, int line);
 
 #endif
 
-
+/* Open and read an STL file into an STL object
+ */
 int stl_read_file(char *input_file, stl_t **stl_new);
 
+/* Create and write a new STL file using the supplied
+ * STL object. This function will fail if the output
+ * file already exists.
+ */
 int stl_write_file(char *output_file, stl_t *stl);
 
+/* Rotate the STL object along the specified axis the specified
+ * number of degrees.
+ */
 int stl_rotate(stl_axis_t axis, float degrees, stl_t *stl);
 
+/* Print to stdout the elements of the STL object
+ */
 void stl_print(stl_t *stl);
 
+/* Free the STL object that was created by stl_read_file()
+ */
 void stl_free(stl_t *stl);
 
 
