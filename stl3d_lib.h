@@ -5,11 +5,18 @@
 extern "C"{
 #endif
 
-#define STL_SUCCESS           0
-#define STL_ERROR             1
-#define STL_ERROR_INVALID_ARG 2
-#define STL_ERROR_IO_ERROR    2
+/* Various error codes that could be returned from the library.
+ * STL_ERROR is the generic one (meaning it should be mapped to something
+ * more meaningful at some point)
+ */
+#define STL_SUCCESS            0
+#define STL_ERROR              1
+#define STL_ERROR_INVALID_ARG  2
+#define STL_ERROR_IO_ERROR     2
+#define STL_ERROR_MEMORY_ERROR 3
 
+/* The axis that the action will be performed around
+ */
 #define STL_AXIS_UNKNOWN 0
 #define STL_AXIS_X       1
 #define STL_AXIS_Y       2

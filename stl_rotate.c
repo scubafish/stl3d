@@ -258,7 +258,7 @@ int stl_read_file(char *input_file, stl_t **stl_new)
 		stl = (stl_t *)malloc(sizeof(*stl));
 		if(NULL == stl)
 		{
-			error = STL_LOG_ERR(STL_ERROR);
+			error = STL_LOG_ERR(STL_ERROR_MEMORY_ERROR);
 		}
 	}
 
@@ -291,7 +291,7 @@ int stl_read_file(char *input_file, stl_t **stl_new)
 		stl->facets = (facet_t *)malloc(stl->facets_count * sizeof(facet_t));
 		if(NULL == stl->facets)
 		{
-			error = STL_LOG_ERR(STL_ERROR);
+			error = STL_LOG_ERR(STL_ERROR_MEMORY_ERROR);
 		}
 		else
 		{
