@@ -38,9 +38,9 @@ typedef int stl_axis_t;
 
 typedef struct
 {
-	float t1;
-	float t2;
-	float t3;
+	float x;
+	float y;
+	float z;
 } vertex_t;
 
 typedef struct

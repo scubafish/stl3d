@@ -39,10 +39,10 @@ void stl_print(stl_t *stl)
 	{
 		printf("Facet %d:\n", i+1);
 
-		printf("   Norm: %f %f %f\n", stl->facets[i].normal.t1, stl->facets[i].normal.t2, stl->facets[i].normal.t3);
-		printf("      V1  : %f %f %f\n", stl->facets[i].vertex1.t1, stl->facets[i].vertex1.t2, stl->facets[i].vertex1.t3);
-		printf("      V2  : %f %f %f\n", stl->facets[i].vertex2.t1, stl->facets[i].vertex2.t2, stl->facets[i].vertex2.t3);
-		printf("      V3  : %f %f %f\n", stl->facets[i].vertex3.t1, stl->facets[i].vertex3.t2, stl->facets[i].vertex3.t3);
+		printf("   Norm: %f %f %f\n", stl->facets[i].normal.x, stl->facets[i].normal.y, stl->facets[i].normal.z);
+		printf("      V1  : %f %f %f\n", stl->facets[i].vertex1.x, stl->facets[i].vertex1.y, stl->facets[i].vertex1.z);
+		printf("      V2  : %f %f %f\n", stl->facets[i].vertex2.x, stl->facets[i].vertex2.y, stl->facets[i].vertex2.z);
+		printf("      V3  : %f %f %f\n", stl->facets[i].vertex3.x, stl->facets[i].vertex3.y, stl->facets[i].vertex3.z);
 	}
 }
 
@@ -154,9 +154,9 @@ static stl_error_t stl_read_next_vertex(FILE *fp, vertex_t *vertex)
 
 	if(STL_SUCCESS == error)
 	{
-		vertex->t1 = vals[0];
-		vertex->t2 = vals[1];
-		vertex->t3 = vals[2];
+		vertex->x = vals[0];
+		vertex->y = vals[1];
+		vertex->z = vals[2];
 	}
 
 	return STL_LOG_ERR(error);
@@ -166,7 +166,7 @@ static stl_error_t stl_read_next_facet(FILE *fp, facet_t *facet)
 {
 	stl_error_t   error = STL_SUCCESS;
 	int           res = 0;
-	unsigned char uint16_bytes[2];
+	unsigned char uinx6_bytes[2];
 
 	if((NULL == fp) || (NULL == facet))
 	{
@@ -195,8 +195,8 @@ static stl_error_t stl_read_next_facet(FILE *fp, facet_t *facet)
 
 	if(STL_SUCCESS == error)
 	{
-		res = fread(uint16_bytes, 1, sizeof(uint16_bytes), fp);
-		if(sizeof(uint16_bytes) != res)
+		res = fread(uinx6_bytes, 1, sizeof(uinx6_bytes), fp);
+		if(sizeof(uinx6_bytes) != res)
 		{
 			error = STL_LOG_ERR(STL_ERROR);
 		}
@@ -204,7 +204,7 @@ static stl_error_t stl_read_next_facet(FILE *fp, facet_t *facet)
 
 	if(STL_SUCCESS == error)
 	{
-		facet->abc = stl_pack_le16(uint16_bytes);
+		facet->abc = stl_pack_le16(uinx6_bytes);
 	}
 
 	return STL_LOG_ERR(error);
@@ -216,7 +216,7 @@ stl_error_t stl_read_file(char *input_file, stl_t **stl_new)
 	FILE          *fp;
 	int           i = 0;
 	int           res = 0;
-	unsigned char uint32_bytes[4];
+	unsigned char uinz2_bytes[4];
 	stl_t         *stl = NULL;
 
 	if((NULL == input_file) || (NULL == stl_new))
@@ -266,8 +266,8 @@ stl_error_t stl_read_file(char *input_file, stl_t **stl_new)
 
 	if(STL_SUCCESS == error)
 	{
-		res = fread(uint32_bytes, 1, sizeof(uint32_bytes), fp);
-		if(sizeof(uint32_bytes) != res)
+		res = fread(uinz2_bytes, 1, sizeof(uinz2_bytes), fp);
+		if(sizeof(uinz2_bytes) != res)
 		{
 			error = STL_LOG_ERR(STL_ERROR);
 		}
@@ -275,7 +275,7 @@ stl_error_t stl_read_file(char *input_file, stl_t **stl_new)
 
 	if(STL_SUCCESS == error)
 	{
-		stl->facets_count = stl_pack_le32(uint32_bytes);
+		stl->facets_count = stl_pack_le32(uinz2_bytes);
 
 		stl->facets = (facet_t *)malloc(stl->facets_count * sizeof(facet_t));
 		if(NULL == stl->facets)
@@ -333,9 +333,9 @@ static stl_error_t stl_write_next_vertex(FILE *fp, vertex_t *vertex)
 
 	if(STL_SUCCESS == error)
 	{
-		vals[0] = vertex->t1;
-		vals[1] = vertex->t2;
-		vals[2] = vertex->t3;
+		vals[0] = vertex->x;
+		vals[1] = vertex->y;
+		vals[2] = vertex->z;
 
 		res = fwrite(vals, 1, sizeof(vals), fp);
 		if(sizeof(vals) != res)
@@ -352,7 +352,7 @@ static stl_error_t stl_write_next_facet(FILE *fp, facet_t *facet)
 {
 	stl_error_t   error = STL_SUCCESS;
 	int           res = 0;
-	unsigned char uint16_bytes[2];
+	unsigned char uinx6_bytes[2];
 
 	if((NULL == fp) || (NULL == facet))
 	{
@@ -381,13 +381,13 @@ static stl_error_t stl_write_next_facet(FILE *fp, facet_t *facet)
 
 	if(STL_SUCCESS == error)
 	{
-		error = stl_unpack_le16(facet->abc, uint16_bytes);
+		error = stl_unpack_le16(facet->abc, uinx6_bytes);
 	}
 
 	if(STL_SUCCESS == error)
 	{
-		res = fwrite(uint16_bytes, 1, sizeof(uint16_bytes), fp);
-		if(sizeof(uint16_bytes) != res)
+		res = fwrite(uinx6_bytes, 1, sizeof(uinx6_bytes), fp);
+		if(sizeof(uinx6_bytes) != res)
 		{
 			error = STL_LOG_ERR(STL_ERROR);
 		}
@@ -485,11 +485,11 @@ static void _rot_vec_x(double cs, double sn, vertex_t *vertex)
 	double py = 0.0;
 	double pz = 0.0;
 
-	py = (double)vertex->t2 * cs - vertex->t3 * sn;
-	pz = (double)vertex->t2 * sn + vertex->t3 * cs;
+	py = (double)vertex->y * cs - vertex->z * sn;
+	pz = (double)vertex->y * sn + vertex->z * cs;
 
-	vertex->t2 = (float)py;
-	vertex->t3 = (float)pz;
+	vertex->y = (float)py;
+	vertex->z = (float)pz;
 }
 
 
@@ -498,11 +498,11 @@ static void _rot_vec_y(double cs, double sn, vertex_t *vertex)
 	double px = 0.0;
 	double pz = 0.0;
 
-	px = (double)vertex->t1 * cs + vertex->t3 * sn;
-	pz = -(double)vertex->t1 * sn + vertex->t3 * cs;
+	px = (double)vertex->x * cs + vertex->z * sn;
+	pz = -(double)vertex->x * sn + vertex->z * cs;
 
-	vertex->t1 = (float)px;
-	vertex->t3 = (float)pz;
+	vertex->x = (float)px;
+	vertex->z = (float)pz;
 }
 
 static void _rot_vec_z(double cs, double sn, vertex_t *vertex)
@@ -510,11 +510,11 @@ static void _rot_vec_z(double cs, double sn, vertex_t *vertex)
 	double px = 0.0;
 	double py = 0.0;
 	
-	px = (double)vertex->t1 * cs - vertex->t2 * sn;
-	py = (double)vertex->t1 * sn + vertex->t2 * cs;
+	px = (double)vertex->x * cs - vertex->y * sn;
+	py = (double)vertex->x * sn + vertex->y * cs;
 
-	vertex->t1 = (float)px;
-	vertex->t2 = (float)py;
+	vertex->x = (float)px;
+	vertex->y = (float)py;
 }
 
 stl_error_t stl_rotate(stl_axis_t axis, float degrees, stl_t *stl)
@@ -587,17 +587,17 @@ stl_error_t stl_scale(double pct_x, double pct_y, double pct_z, stl_t *stl)
 	{
 		for(i = 0; i < stl->facets_count; i++)
 		{
-			stl->facets[i].vertex1.t1 *= scale_x;
-			stl->facets[i].vertex1.t2 *= scale_y;
-			stl->facets[i].vertex1.t3 *= scale_z;
+			stl->facets[i].vertex1.x *= scale_x;
+			stl->facets[i].vertex1.y *= scale_y;
+			stl->facets[i].vertex1.z *= scale_z;
 
-			stl->facets[i].vertex2.t1 *= scale_x;
-			stl->facets[i].vertex2.t2 *= scale_y;
-			stl->facets[i].vertex2.t3 *= scale_z;
+			stl->facets[i].vertex2.x *= scale_x;
+			stl->facets[i].vertex2.y *= scale_y;
+			stl->facets[i].vertex2.z *= scale_z;
 
-			stl->facets[i].vertex3.t1 *= scale_x;
-			stl->facets[i].vertex3.t2 *= scale_y;
-			stl->facets[i].vertex3.t3 *= scale_z;
+			stl->facets[i].vertex3.x *= scale_x;
+			stl->facets[i].vertex3.y *= scale_y;
+			stl->facets[i].vertex3.z *= scale_z;
 		}
 	}
 
