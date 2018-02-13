@@ -512,6 +512,45 @@ static void _rot_vec(double cs, double sn, float *f1, float *f2)
 
 }
 
+static void _rot_vec_x(double cs, double sn, triplet_t *triplet)
+{
+	double py = 0.0;
+	double pz = 0.0;
+
+	py = (double)triplet->t2 * cs - triplet->t3 * sn;
+	pz = (double)triplet->t2 * sn + triplet->t3 * cs;
+
+	triplet->t2 = (float)py;
+	triplet->t3 = (float)pz;
+}
+
+
+static void _rot_vec_y(double cs, double sn, triplet_t *triplet)
+{
+	double px = 0.0;
+	double pz = 0.0;
+
+	px = (double)triplet->t1 * cs + triplet->t3 * sn;
+	pz = -(double)triplet->t1 * sn + triplet->t3 * cs;
+
+	triplet->t1 = (float)px;
+	triplet->t3 = (float)pz;
+}
+
+static void _rot_vec_z(double cs, double sn, triplet_t *triplet)
+{
+	double px = 0.0;
+	double py = 0.0;
+	
+//	_rot_vec(cs, sn, &stl->facets[i].normal.t1, &stl->facets[i].normal.t2);
+
+	px = (double)triplet->t1 * cs - triplet->t2 * sn;
+	py = (double)triplet->t1 * sn + triplet->t2 * cs;
+
+	triplet->t1 = (float)px;
+	triplet->t2 = (float)py;
+}
+
 stl_error_t stl_rotate(stl_axis_t axis, float degrees, stl_t *stl)
 {
 	stl_error_t error = STL_SUCCESS;
@@ -519,6 +558,9 @@ stl_error_t stl_rotate(stl_axis_t axis, float degrees, stl_t *stl)
 	double      radians = 0.0;
 	double      cs = 0.0;
 	double      sn = 0.0;
+	double      px = 0.0;
+	double      py = 0.0;
+	double      pz = 0.0;
 
 	if(NULL == stl)
 	{
@@ -533,12 +575,38 @@ stl_error_t stl_rotate(stl_axis_t axis, float degrees, stl_t *stl)
 
 //		printf("deg: %f   rad: %f   cs: %f   sn: %f\n", degrees, radians, cs, sn);
 
+		/* TODO - The elegant way to do this is to set up a rotation matrix,
+		 * which will also let us rotate around any vector. Do this.
+		 */
 		for(i = 0; i < stl->facets_count; i++)
 		{
-			_rot_vec(cs, sn, &stl->facets[i].normal.t1, &stl->facets[i].normal.t2);
-			_rot_vec(cs, sn, &stl->facets[i].vertex1.t1, &stl->facets[i].vertex1.t2);
-			_rot_vec(cs, sn, &stl->facets[i].vertex2.t1, &stl->facets[i].vertex2.t2);
-			_rot_vec(cs, sn, &stl->facets[i].vertex3.t1, &stl->facets[i].vertex3.t2);
+			if(STL_AXIS_X == axis)
+			{
+//				_rot_vec(cs, sn, &stl->facets[i].normal.t1, &stl->facets[i].normal.t2);
+//				_rot_vec(cs, sn, &stl->facets[i].vertex1.t1, &stl->facets[i].vertex1.t2);
+//				_rot_vec(cs, sn, &stl->facets[i].vertex2.t1, &stl->facets[i].vertex2.t2);
+//				_rot_vec(cs, sn, &stl->facets[i].vertex3.t1, &stl->facets[i].vertex3.t2);
+
+				_rot_vec_x(cs, sn, &stl->facets[i].normal);
+				_rot_vec_x(cs, sn, &stl->facets[i].vertex1);
+				_rot_vec_x(cs, sn, &stl->facets[i].vertex2);
+				_rot_vec_x(cs, sn, &stl->facets[i].vertex3);
+			}
+			else if(STL_AXIS_Y == axis)
+			{
+				_rot_vec_y(cs, sn, &stl->facets[i].normal);
+				_rot_vec_y(cs, sn, &stl->facets[i].vertex1);
+				_rot_vec_y(cs, sn, &stl->facets[i].vertex2);
+				_rot_vec_y(cs, sn, &stl->facets[i].vertex3);
+			}
+			else
+			{
+				/* axis == z */
+				_rot_vec_z(cs, sn, &stl->facets[i].normal);
+				_rot_vec_z(cs, sn, &stl->facets[i].vertex1);
+				_rot_vec_z(cs, sn, &stl->facets[i].vertex2);
+				_rot_vec_z(cs, sn, &stl->facets[i].vertex3);
+			}
 		}
 	}
 

@@ -82,10 +82,12 @@ int main(int argc, char **argv)
 		error = stl_read_file(input_file, &stl);
 	}
 
+#if 0
 	if(STL_SUCCESS == error)
 	{
 		stl_print(stl);
 	}
+#endif
 
 	/* Do the rotation */
 	if(STL_SUCCESS == error)
@@ -93,10 +95,12 @@ int main(int argc, char **argv)
 		error = stl_rotate(axis, degrees, stl);
 	}
 
+#if 0
 	if(STL_SUCCESS == error)
 	{
 		stl_print(stl);
 	}
+#endif
 
 	/* Save to output file */
 	if(STL_SUCCESS == error)
