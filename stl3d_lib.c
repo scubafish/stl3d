@@ -249,16 +249,6 @@ stl_error_t stl_read_file(char *input_file, stl_t **stl_new)
 		}
 	}
 
-
-	if(STL_SUCCESS == error)
-	{
-		if(fseek(fp, 0, SEEK_SET))
-		{
-			/* Could not seek to start of file for some reason */
-			error = STL_LOG_ERR(STL_ERROR);
-		}
-	}
-
 	if(STL_SUCCESS == error)
 	{
 		stl = (stl_t *)malloc(sizeof(*stl));
@@ -276,6 +266,17 @@ stl_error_t stl_read_file(char *input_file, stl_t **stl_new)
 		if(STL_HEADER_SIZE != res)
 		{
 			error = STL_LOG_ERR(STL_ERROR);
+		}
+	}
+
+	if(STL_SUCCESS == error)
+	{
+		/* Make sure we are not dealing with an ASCII STL file. Not supported yet.
+		 * ASCII STL files start with "solid" at the start of the file.
+		 */
+		if(memcmp(stl->header, "solid", strlen("solid")) == 0)
+		{
+			error = STL_LOG_ERR(STL_ERROR_UNSUPPORTED);
 		}
 	}
 

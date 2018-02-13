@@ -14,6 +14,7 @@ extern "C"{
 #define STL_ERROR_INVALID_ARG  2
 #define STL_ERROR_IO_ERROR     2
 #define STL_ERROR_MEMORY_ERROR 3
+#define STL_ERROR_UNSUPPORTED  4
 
 typedef unsigned int stl_error_t;
 
