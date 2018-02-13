@@ -132,13 +132,13 @@ void stl_free(stl_t *stl)
 	free(stl);
 }
 
-static stl_error_t stl_read_next_triplet(FILE *fp, triplet_t *triplet)
+static stl_error_t stl_read_next_vertex(FILE *fp, vertex_t *vertex)
 {
 	stl_error_t error = STL_SUCCESS;
 	int         res = 0;
 	float       vals[3];
 
-	if((NULL == fp) || (NULL == triplet))
+	if((NULL == fp) || (NULL == vertex))
 	{
 		error = STL_LOG_ERR(STL_ERROR);
 	}
@@ -154,9 +154,9 @@ static stl_error_t stl_read_next_triplet(FILE *fp, triplet_t *triplet)
 
 	if(STL_SUCCESS == error)
 	{
-		triplet->t1 = vals[0];
-		triplet->t2 = vals[1];
-		triplet->t3 = vals[2];
+		vertex->t1 = vals[0];
+		vertex->t2 = vals[1];
+		vertex->t3 = vals[2];
 	}
 
 	return STL_LOG_ERR(error);
@@ -175,22 +175,22 @@ static stl_error_t stl_read_next_facet(FILE *fp, facet_t *facet)
 
 	if(STL_SUCCESS == error)
 	{
-		error = stl_read_next_triplet(fp, &(facet->normal));
+		error = stl_read_next_vertex(fp, &(facet->normal));
 	}
 
 	if(STL_SUCCESS == error)
 	{
-		error = stl_read_next_triplet(fp, &(facet->vertex1));
+		error = stl_read_next_vertex(fp, &(facet->vertex1));
 	}
 
 	if(STL_SUCCESS == error)
 	{
-		error = stl_read_next_triplet(fp, &(facet->vertex2));
+		error = stl_read_next_vertex(fp, &(facet->vertex2));
 	}
 
 	if(STL_SUCCESS == error)
 	{
-		error = stl_read_next_triplet(fp, &(facet->vertex3));
+		error = stl_read_next_vertex(fp, &(facet->vertex3));
 	}
 
 	if(STL_SUCCESS == error)
@@ -320,22 +320,22 @@ stl_error_t stl_read_file(char *input_file, stl_t **stl_new)
 	return STL_LOG_ERR(error);
 }
 
-static stl_error_t stl_write_next_triplet(FILE *fp, triplet_t *triplet)
+static stl_error_t stl_write_next_vertex(FILE *fp, vertex_t *vertex)
 {
 	stl_error_t error = STL_SUCCESS;
 	int         res = 0;
 	float       vals[3];
 
-	if((NULL == fp) || (NULL == triplet))
+	if((NULL == fp) || (NULL == vertex))
 	{
 		error = STL_LOG_ERR(STL_ERROR);
 	}
 
 	if(STL_SUCCESS == error)
 	{
-		vals[0] = triplet->t1;
-		vals[1] = triplet->t2;
-		vals[2] = triplet->t3;
+		vals[0] = vertex->t1;
+		vals[1] = vertex->t2;
+		vals[2] = vertex->t3;
 
 		res = fwrite(vals, 1, sizeof(vals), fp);
 		if(sizeof(vals) != res)
@@ -361,22 +361,22 @@ static stl_error_t stl_write_next_facet(FILE *fp, facet_t *facet)
 
 	if(STL_SUCCESS == error)
 	{
-		error = stl_write_next_triplet(fp, &(facet->normal));
+		error = stl_write_next_vertex(fp, &(facet->normal));
 	}
 
 	if(STL_SUCCESS == error)
 	{
-		error = stl_write_next_triplet(fp, &(facet->vertex1));
+		error = stl_write_next_vertex(fp, &(facet->vertex1));
 	}
 
 	if(STL_SUCCESS == error)
 	{
-		error = stl_write_next_triplet(fp, &(facet->vertex2));
+		error = stl_write_next_vertex(fp, &(facet->vertex2));
 	}
 
 	if(STL_SUCCESS == error)
 	{
-		error = stl_write_next_triplet(fp, &(facet->vertex3));
+		error = stl_write_next_vertex(fp, &(facet->vertex3));
 	}
 
 	if(STL_SUCCESS == error)
@@ -480,41 +480,41 @@ stl_error_t stl_write_file(char *output_file, stl_t *stl)
 	return STL_LOG_ERR(error);
 }
 
-static void _rot_vec_x(double cs, double sn, triplet_t *triplet)
+static void _rot_vec_x(double cs, double sn, vertex_t *vertex)
 {
 	double py = 0.0;
 	double pz = 0.0;
 
-	py = (double)triplet->t2 * cs - triplet->t3 * sn;
-	pz = (double)triplet->t2 * sn + triplet->t3 * cs;
+	py = (double)vertex->t2 * cs - vertex->t3 * sn;
+	pz = (double)vertex->t2 * sn + vertex->t3 * cs;
 
-	triplet->t2 = (float)py;
-	triplet->t3 = (float)pz;
+	vertex->t2 = (float)py;
+	vertex->t3 = (float)pz;
 }
 
 
-static void _rot_vec_y(double cs, double sn, triplet_t *triplet)
+static void _rot_vec_y(double cs, double sn, vertex_t *vertex)
 {
 	double px = 0.0;
 	double pz = 0.0;
 
-	px = (double)triplet->t1 * cs + triplet->t3 * sn;
-	pz = -(double)triplet->t1 * sn + triplet->t3 * cs;
+	px = (double)vertex->t1 * cs + vertex->t3 * sn;
+	pz = -(double)vertex->t1 * sn + vertex->t3 * cs;
 
-	triplet->t1 = (float)px;
-	triplet->t3 = (float)pz;
+	vertex->t1 = (float)px;
+	vertex->t3 = (float)pz;
 }
 
-static void _rot_vec_z(double cs, double sn, triplet_t *triplet)
+static void _rot_vec_z(double cs, double sn, vertex_t *vertex)
 {
 	double px = 0.0;
 	double py = 0.0;
 	
-	px = (double)triplet->t1 * cs - triplet->t2 * sn;
-	py = (double)triplet->t1 * sn + triplet->t2 * cs;
+	px = (double)vertex->t1 * cs - vertex->t2 * sn;
+	py = (double)vertex->t1 * sn + vertex->t2 * cs;
 
-	triplet->t1 = (float)px;
-	triplet->t2 = (float)py;
+	vertex->t1 = (float)px;
+	vertex->t2 = (float)py;
 }
 
 stl_error_t stl_rotate(stl_axis_t axis, float degrees, stl_t *stl)

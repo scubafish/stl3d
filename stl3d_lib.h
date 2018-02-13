@@ -41,14 +41,14 @@ typedef struct
 	float t1;
 	float t2;
 	float t3;
-} triplet_t;
+} vertex_t;
 
 typedef struct
 {
-	triplet_t normal;
-	triplet_t vertex1;
-	triplet_t vertex2;
-	triplet_t vertex3;
+	vertex_t normal;
+	vertex_t vertex1;
+	vertex_t vertex2;
+	vertex_t vertex3;
 
 	/* Attribute byte count */
 	unsigned short abc;
