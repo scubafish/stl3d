@@ -166,7 +166,7 @@ static stl_error_t stl_read_next_facet(FILE *fp, facet_t *facet)
 {
 	stl_error_t   error = STL_SUCCESS;
 	int           res = 0;
-	unsigned char uinx6_bytes[2];
+	unsigned char uint16_bytes[2];
 
 	if((NULL == fp) || (NULL == facet))
 	{
@@ -195,8 +195,8 @@ static stl_error_t stl_read_next_facet(FILE *fp, facet_t *facet)
 
 	if(STL_SUCCESS == error)
 	{
-		res = fread(uinx6_bytes, 1, sizeof(uinx6_bytes), fp);
-		if(sizeof(uinx6_bytes) != res)
+		res = fread(uint16_bytes, 1, sizeof(uint16_bytes), fp);
+		if(sizeof(uint16_bytes) != res)
 		{
 			error = STL_LOG_ERR(STL_ERROR);
 		}
@@ -204,7 +204,7 @@ static stl_error_t stl_read_next_facet(FILE *fp, facet_t *facet)
 
 	if(STL_SUCCESS == error)
 	{
-		facet->abc = stl_pack_le16(uinx6_bytes);
+		facet->abc = stl_pack_le16(uint16_bytes);
 	}
 
 	return STL_LOG_ERR(error);
@@ -216,7 +216,7 @@ stl_error_t stl_read_file(char *input_file, stl_t **stl_new)
 	FILE          *fp;
 	int           i = 0;
 	int           res = 0;
-	unsigned char uinz2_bytes[4];
+	unsigned char uint32_bytes[4];
 	stl_t         *stl = NULL;
 
 	if((NULL == input_file) || (NULL == stl_new))
@@ -266,8 +266,8 @@ stl_error_t stl_read_file(char *input_file, stl_t **stl_new)
 
 	if(STL_SUCCESS == error)
 	{
-		res = fread(uinz2_bytes, 1, sizeof(uinz2_bytes), fp);
-		if(sizeof(uinz2_bytes) != res)
+		res = fread(uint32_bytes, 1, sizeof(uint32_bytes), fp);
+		if(sizeof(uint32_bytes) != res)
 		{
 			error = STL_LOG_ERR(STL_ERROR);
 		}
@@ -275,7 +275,7 @@ stl_error_t stl_read_file(char *input_file, stl_t **stl_new)
 
 	if(STL_SUCCESS == error)
 	{
-		stl->facets_count = stl_pack_le32(uinz2_bytes);
+		stl->facets_count = stl_pack_le32(uint32_bytes);
 
 		stl->facets = (facet_t *)malloc(stl->facets_count * sizeof(facet_t));
 		if(NULL == stl->facets)
@@ -352,7 +352,7 @@ static stl_error_t stl_write_next_facet(FILE *fp, facet_t *facet)
 {
 	stl_error_t   error = STL_SUCCESS;
 	int           res = 0;
-	unsigned char uinx6_bytes[2];
+	unsigned char uint16_bytes[2];
 
 	if((NULL == fp) || (NULL == facet))
 	{
@@ -381,13 +381,13 @@ static stl_error_t stl_write_next_facet(FILE *fp, facet_t *facet)
 
 	if(STL_SUCCESS == error)
 	{
-		error = stl_unpack_le16(facet->abc, uinx6_bytes);
+		error = stl_unpack_le16(facet->abc, uint16_bytes);
 	}
 
 	if(STL_SUCCESS == error)
 	{
-		res = fwrite(uinx6_bytes, 1, sizeof(uinx6_bytes), fp);
-		if(sizeof(uinx6_bytes) != res)
+		res = fwrite(uint16_bytes, 1, sizeof(uint16_bytes), fp);
+		if(sizeof(uint16_bytes) != res)
 		{
 			error = STL_LOG_ERR(STL_ERROR);
 		}
