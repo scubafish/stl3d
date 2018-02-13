@@ -15,15 +15,12 @@ int _log_err(int error, char *file, int line)
 	return error;
 }
 
+
 static double deg2rad(double deg)
 {
 	return (deg * M_PI / 180);
 }
 
-static double rad2deg(double rad)
-{
-	return (rad * 180 / M_PI);
-}
 
 void stl_print(stl_t *stl)
 {
@@ -49,18 +46,6 @@ void stl_print(stl_t *stl)
 	}
 }
 
-/* This routine packs 4 big endian bytes from buffer into a 32 bit number,
- * converting it to the platforms native endian-ness.
- */
-static unsigned int stl_pack_be32(
-	const unsigned char *buffer
-	)
-{
-	return(((unsigned int)buffer[3] <<  0) |
-		((unsigned int)buffer[2] <<  8) |
-		((unsigned int)buffer[1] << 16) |
-		((unsigned int)buffer[0] << 24) );
-}
 
 /* This routine packs 4 little endian bytes from buffer into a 32 bit number,
  * converting it to the platforms native endian-ness.
@@ -74,6 +59,7 @@ static unsigned int stl_pack_le32(
 		((unsigned int)buffer[1] <<  8) |
 		((unsigned int)buffer[0] <<  0) );
 }
+
 
 /* This routine packs 2 little endian bytes from buffer into a 16 bit number,
  * converting it to the platforms native endian-ness.
@@ -180,8 +166,6 @@ static stl_error_t stl_read_next_facet(FILE *fp, facet_t *facet)
 {
 	stl_error_t   error = STL_SUCCESS;
 	int           res = 0;
-	unsigned char buffer[48];
-	float         vals[3];
 	unsigned char uint16_bytes[2];
 
 	if((NULL == fp) || (NULL == facet))
@@ -368,7 +352,6 @@ static stl_error_t stl_write_next_facet(FILE *fp, facet_t *facet)
 {
 	stl_error_t   error = STL_SUCCESS;
 	int           res = 0;
-	float         vals[3];
 	unsigned char uint16_bytes[2];
 
 	if((NULL == fp) || (NULL == facet))
@@ -541,9 +524,6 @@ stl_error_t stl_rotate(stl_axis_t axis, float degrees, stl_t *stl)
 	double      radians = 0.0;
 	double      cs = 0.0;
 	double      sn = 0.0;
-	double      px = 0.0;
-	double      py = 0.0;
-	double      pz = 0.0;
 
 	if(NULL == stl)
 	{
