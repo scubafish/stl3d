@@ -497,19 +497,6 @@ stl_error_t stl_write_file(char *output_file, stl_t *stl)
 	return STL_LOG_ERR(error);
 }
 
-static void _rot_vec(double cs, double sn, float *f1, float *f2)
-{
-	double px = 0.0;
-	double py = 0.0;
-
-	px = *f1 * cs - *f2 * sn;
-	py = *f1 * sn + *f2 * cs;
-
-	*f1 = (float)px;
-	*f2 = (float)py;
-
-}
-
 static void _rot_vec_x(double cs, double sn, triplet_t *triplet)
 {
 	double py = 0.0;
