@@ -87,6 +87,12 @@ stl_error_t stl_write_file(char *output_file, stl_t *stl);
  */
 stl_error_t stl_rotate(stl_axis_t axis, float degrees, stl_t *stl);
 
+/* Rotate the stl object along each axis by the specified percentages
+ *
+ * A value of 100.0 means don't scale that axis.
+ */
+stl_error_t stl_scale(double pct_x, double pct_y, double pct_z, stl_t *stl);
+
 /* Print to stdout the elements of the STL object
  */
 void stl_print(stl_t *stl);

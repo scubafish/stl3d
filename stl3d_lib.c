@@ -292,8 +292,6 @@ stl_error_t stl_read_file(char *input_file, stl_t **stl_new)
 	{
 		stl->facets_count = stl_pack_le32(uint32_bytes);
 
-//		printf("stl->facets_count = %d\n", stl->facets_count);
-
 		stl->facets = (facet_t *)malloc(stl->facets_count * sizeof(facet_t));
 		if(NULL == stl->facets)
 		{
@@ -369,7 +367,6 @@ static stl_error_t stl_write_next_facet(FILE *fp, facet_t *facet)
 {
 	stl_error_t   error = STL_SUCCESS;
 	int           res = 0;
-//	unsigned char buffer[48];
 	float         vals[3];
 	unsigned char uint16_bytes[2];
 
@@ -542,8 +539,6 @@ static void _rot_vec_z(double cs, double sn, triplet_t *triplet)
 	double px = 0.0;
 	double py = 0.0;
 	
-//	_rot_vec(cs, sn, &stl->facets[i].normal.t1, &stl->facets[i].normal.t2);
-
 	px = (double)triplet->t1 * cs - triplet->t2 * sn;
 	py = (double)triplet->t1 * sn + triplet->t2 * cs;
 
@@ -573,8 +568,6 @@ stl_error_t stl_rotate(stl_axis_t axis, float degrees, stl_t *stl)
 		cs = cos(radians);
 		sn = sin(radians);
 
-//		printf("deg: %f   rad: %f   cs: %f   sn: %f\n", degrees, radians, cs, sn);
-
 		/* TODO - The elegant way to do this is to set up a rotation matrix,
 		 * which will also let us rotate around any vector. Do this.
 		 */
@@ -582,11 +575,6 @@ stl_error_t stl_rotate(stl_axis_t axis, float degrees, stl_t *stl)
 		{
 			if(STL_AXIS_X == axis)
 			{
-//				_rot_vec(cs, sn, &stl->facets[i].normal.t1, &stl->facets[i].normal.t2);
-//				_rot_vec(cs, sn, &stl->facets[i].vertex1.t1, &stl->facets[i].vertex1.t2);
-//				_rot_vec(cs, sn, &stl->facets[i].vertex2.t1, &stl->facets[i].vertex2.t2);
-//				_rot_vec(cs, sn, &stl->facets[i].vertex3.t1, &stl->facets[i].vertex3.t2);
-
 				_rot_vec_x(cs, sn, &stl->facets[i].normal);
 				_rot_vec_x(cs, sn, &stl->facets[i].vertex1);
 				_rot_vec_x(cs, sn, &stl->facets[i].vertex2);
@@ -607,6 +595,41 @@ stl_error_t stl_rotate(stl_axis_t axis, float degrees, stl_t *stl)
 				_rot_vec_z(cs, sn, &stl->facets[i].vertex2);
 				_rot_vec_z(cs, sn, &stl->facets[i].vertex3);
 			}
+		}
+	}
+
+	return STL_LOG_ERR(error);
+}
+
+stl_error_t stl_scale(double pct_x, double pct_y, double pct_z, stl_t *stl)
+{
+	stl_error_t error = STL_SUCCESS;
+	int         i = 0;
+	double      scale_x = pct_x / 100.0;
+	double      scale_y = pct_y / 100.0;
+	double      scale_z = pct_z / 100.0;
+
+	if(NULL == stl)
+	{
+		error = STL_LOG_ERR(STL_ERROR_INVALID_ARG);
+	}
+
+
+	if(STL_SUCCESS == error)
+	{
+		for(i = 0; i < stl->facets_count; i++)
+		{
+			stl->facets[i].vertex1.t1 *= scale_x;
+			stl->facets[i].vertex1.t2 *= scale_y;
+			stl->facets[i].vertex1.t3 *= scale_z;
+
+			stl->facets[i].vertex2.t1 *= scale_x;
+			stl->facets[i].vertex2.t2 *= scale_y;
+			stl->facets[i].vertex2.t3 *= scale_z;
+
+			stl->facets[i].vertex3.t1 *= scale_x;
+			stl->facets[i].vertex3.t2 *= scale_y;
+			stl->facets[i].vertex3.t3 *= scale_z;
 		}
 	}
 

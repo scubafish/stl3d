@@ -98,6 +98,13 @@ int main(int argc, char **argv)
 #if 0
 	if(STL_SUCCESS == error)
 	{
+		error = stl_scale(100, 100, 20, stl);
+	}
+#endif
+
+#if 0
+	if(STL_SUCCESS == error)
+	{
 		stl_print(stl);
 	}
 #endif
