@@ -5,6 +5,8 @@
 
 #include "stl3d_lib.h"
 
+#define MY_PI 3.14159265358979323846
+
 int _log_err(int error, char *file, int line)
 {
 	if(STL_SUCCESS != error)
@@ -18,7 +20,7 @@ int _log_err(int error, char *file, int line)
 
 static double deg2rad(double deg)
 {
-	return (deg * M_PI / 180);
+	return (deg * MY_PI / 180);
 }
 
 
