@@ -109,10 +109,28 @@ stl_from_heightmap_double(
 	)
 {
 	stl_error_t  error = STL_ERROR_UNSUPPORTED;
+	unsigned int fascet_count = 0;
 
 	if((NULL == vals) || (0 == width) || (0 == height) || (scale_pct <= 0.0) || (units_per_pixel <= 0.0) || (NULL == stl))
 	{
 		error = STL_LOG_ERR(STL_ERROR_INVALID_ARG);
+	}
+
+	if(STL_SUCCESS == error)
+	{
+		/* Calculate how many fascents we will need for this STL file
+		 */
+
+		/* This many for the top mesh */
+		fascet_count = width * height * 2;
+
+		/* This many for the bottom mesh */
+		fascet_count += width * height * 2;
+
+		/* This many for the base height on each sof the 4 sides */
+		fascet_count += ((width * 2) + (height * 2) * 2);
+
+		/* And this many for the sides above the base height but below the top point */
 	}
 
 	return STL_LOG_ERR(error);
