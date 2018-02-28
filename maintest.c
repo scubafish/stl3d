@@ -59,7 +59,7 @@ int main(int argc, char **argv)
 				exit(1);
 			}
 
-			degrees = atof(argv[i+2]);
+			degrees = (float)atof(argv[i+2]);
 
 			i += 2;
 		}
@@ -121,6 +121,11 @@ int main(int argc, char **argv)
 	if(STL_SUCCESS == error)
 	{
 		error = stl_read_file(input_file, &stl);
+	}
+
+	if(STL_SUCCESS == error)
+	{
+		stl_print_stats(stl);
 	}
 
 #if 0

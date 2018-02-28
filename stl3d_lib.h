@@ -5,6 +5,7 @@
 extern "C"{
 #endif
 
+
 /* Various error codes that could be returned from the library.
  * STL_ERROR is the generic one (meaning it should be mapped to something
  * more meaningful at some point)
@@ -46,9 +47,7 @@ typedef struct
 typedef struct
 {
 	vertex_t normal;
-	vertex_t vertex1;
-	vertex_t vertex2;
-	vertex_t vertex3;
+	vertex_t verticies[3];
 
 	/* Attribute byte count */
 	unsigned short abc;
@@ -94,9 +93,56 @@ stl_error_t stl_rotate(stl_axis_t axis, float degrees, stl_t *stl);
  */
 stl_error_t stl_scale(double pct_x, double pct_y, double pct_z, stl_t *stl);
 
+/* Make an STL object from an array of unsigned 8 bit grayscale values
+ */
+stl_error_t
+stl_from_heightmap_uchar(
+	unsigned char *vals,
+	unsigned int width,
+	unsigned int height,
+	double scale_pct,
+	double base_height,
+	double units_per_pixel,
+	stl_t **stl
+	);
+
+/* Make an STL object from an array of signed 8 bit grayscale values
+ */
+stl_error_t
+stl_from_heightmap_char(
+	signed char *vals,
+	unsigned int width,
+	unsigned int height,
+	double scale_pct,
+	double base_height,
+	double units_per_pixel,
+	stl_t **stl
+	);
+
+/* Make an STL object from an array of double values
+ *
+ * scale_pct: Percentage to scale the height values (100.0 is actual value)
+ * base_height: "Padding" below lowest height value. This will not be scaled by scale_pct. Must be > 0
+ * units_per_pixel: x/y distance betyween points. These will not be scaled.
+ */
+stl_error_t
+stl_from_heightmap_double(
+	double *vals,
+	unsigned int width,
+	unsigned int height,
+	double scale_pct,
+	double base_height,
+	double units_per_pixel,
+	stl_t **stl
+	);
+
 /* Print to stdout the elements of the STL object
  */
 void stl_print(stl_t *stl);
+
+/* Calculate and print some basic stats about the STL object
+ */
+void stl_print_stats(stl_t *stl);
 
 /* Free the STL object that was created by stl_read_file()
  */
