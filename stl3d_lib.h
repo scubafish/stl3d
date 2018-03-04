@@ -19,6 +19,13 @@ extern "C"{
 
 typedef unsigned int stl_error_t;
 
+/* 0,0 origin when processing heightmaps
+ */
+#define STL_ORIGIN_TOP_LEFT 0
+#define STL_ORIGIN_BOTTOM_LEFT 1
+
+typedef unsigned int stl_origin_t;
+
 
 /* The axis that the action will be performed around
  */
@@ -28,7 +35,7 @@ typedef unsigned int stl_error_t;
 #define STL_AXIS_Z       3
 
 /* One of STL_AXIS_X, STL_AXIS_X, or STL_AXIS_X */
-typedef int stl_axis_t;
+typedef unsigned int stl_axis_t;
 
 #define STL_HEADER_SIZE 80
 
@@ -72,6 +79,14 @@ int _log_err(int error, char *file, int line);
 
 #endif
 
+/* Create a new empty STL object with the specified number of fascents allocated
+ */
+stl_error_t stl_new(stl_t **stl, unsigned int fascets_count);
+
+/* Free the STL object that was created by stl_read_file()
+ */
+void stl_free(stl_t *stl);
+
 /* Open and read an STL file into an STL object
  */
 stl_error_t stl_read_file(char *input_file, stl_t **stl_new);
@@ -93,11 +108,26 @@ stl_error_t stl_rotate(stl_axis_t axis, float degrees, stl_t *stl);
  */
 stl_error_t stl_scale(double pct_x, double pct_y, double pct_z, stl_t *stl);
 
+/* Make an STL object from a file containing 8 bit unsigned grayscale values
+ */
+stl_error_t
+stl_from_heightmap_uchar_file(
+	char *filename,
+	stl_origin_t origin,
+	unsigned int width,
+	unsigned int height,
+	double scale_pct,
+	double base_height,
+	double units_per_pixel,
+	stl_t **stl
+	);
+
 /* Make an STL object from an array of unsigned 8 bit grayscale values
  */
 stl_error_t
 stl_from_heightmap_uchar(
 	unsigned char *vals,
+	stl_origin_t origin,
 	unsigned int width,
 	unsigned int height,
 	double scale_pct,
@@ -111,6 +141,7 @@ stl_from_heightmap_uchar(
 stl_error_t
 stl_from_heightmap_char(
 	signed char *vals,
+	stl_origin_t origin,
 	unsigned int width,
 	unsigned int height,
 	double scale_pct,
@@ -128,6 +159,7 @@ stl_from_heightmap_char(
 stl_error_t
 stl_from_heightmap_double(
 	double *vals,
+	stl_origin_t origin,
 	unsigned int width,
 	unsigned int height,
 	double scale_pct,
@@ -143,10 +175,6 @@ void stl_print(stl_t *stl);
 /* Calculate and print some basic stats about the STL object
  */
 void stl_print_stats(stl_t *stl);
-
-/* Free the STL object that was created by stl_read_file()
- */
-void stl_free(stl_t *stl);
 
 
 #ifdef __cplusplus

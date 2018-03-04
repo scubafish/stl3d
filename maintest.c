@@ -28,6 +28,7 @@ int main(int argc, char **argv)
 
 	stl_t       *stl = NULL;
 
+#if 0
 	/* Simple arg processing, not using getopt() so it is windows friendly */
 	for(i = 1; i < argc; i++)
 	{
@@ -117,6 +118,35 @@ int main(int argc, char **argv)
 		print_usage(argv[0]);
 		exit(1);
 	}
+#endif
+
+#if 0
+	if(STL_SUCCESS == error)
+	{
+		error = stl_read_file("10x5x1.stl", &stl);
+		stl_print(stl);
+	}
+#endif
+
+#if 1
+	if(STL_SUCCESS == error)
+	{
+		unsigned char vals[6] = {100, 25, 0,
+		                         100, 25, 0};
+		unsigned char vals2[300*400];
+		memset(vals2, 0x05, 300*400);
+
+		error = stl_from_heightmap_uchar_file("..\\test_data\\manly_8bit_375_462.raw", STL_ORIGIN_BOTTOM_LEFT, 375, 462, 25.0, 2.0, 0.35, &stl);
+//		error = stl_from_heightmap_uchar(vals, STL_ORIGIN_TOP_LEFT, 3, 2, 100.0, 5, 100, &stl);
+//		error = stl_from_heightmap_uchar(vals2, STL_ORIGIN_TOP_LEFT, 300, 400, 100.0, 15, 0.10, &stl);
+	}
+
+	if(STL_SUCCESS == error)
+	{
+		stl_print_stats(stl);
+		error = stl_write_file("manly.stl", stl);
+	}
+#endif
 
 	if(STL_SUCCESS == error)
 	{

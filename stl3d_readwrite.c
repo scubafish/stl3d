@@ -226,7 +226,7 @@ stl_error_t stl_read_file(char *input_file, stl_t **stl_new)
 		}
 		else
 		{
-			memset(stl->facets, 0x00, sizeof(stl->facets[0]));
+			memset(stl->facets, 0x00, sizeof(stl->facets[0]) * stl->facets_count);
 		}
 	}
 

@@ -137,6 +137,53 @@ void stl_print_stats(stl_t *stl)
 	printf("min_z: %f   max_z: %f   width: %f\n", min_z, max_z, max_z - min_z);
 }
 
+stl_error_t stl_new(stl_t **stl_new, unsigned int fascets_count)
+{
+	stl_error_t error = STL_SUCCESS;
+	stl_t       *stl = NULL;
+
+	if(NULL == stl_new)
+	{
+		error = STL_LOG_ERR(STL_ERROR_INVALID_ARG);
+	}
+
+	if(STL_SUCCESS == error)
+	{
+		stl = (stl_t *)malloc(sizeof(*stl));
+		if(NULL == stl)
+		{
+			error = STL_LOG_ERR(STL_ERROR_MEMORY_ERROR);
+		}
+	}
+
+	if(STL_SUCCESS == error)
+	{
+		memset(stl, 0x00, sizeof(*stl));
+
+		stl->facets_count = fascets_count;
+
+		stl->facets = (facet_t *)malloc(stl->facets_count * sizeof(facet_t));
+		if(NULL == stl->facets)
+		{
+			error = STL_LOG_ERR(STL_ERROR_MEMORY_ERROR);
+		}
+		else
+		{
+			memset(stl->facets, 0x00, sizeof(stl->facets[0]) * fascets_count);
+		}
+
+		*stl_new = stl;
+		stl = NULL;
+	}
+
+	if(NULL != stl)
+	{
+		stl_free(stl);
+		stl = NULL;
+	}
+
+	return STL_LOG_ERR(error);
+}
 
 void stl_free(stl_t *stl)
 {
@@ -202,7 +249,7 @@ stl_error_t stl_rotate(stl_axis_t axis, float degrees, stl_t *stl)
 
 	if(NULL == stl)
 	{
-		return STL_LOG_ERR(STL_ERROR);
+		error = STL_LOG_ERR(STL_ERROR_INVALID_ARG);
 	}
 
 	if(STL_SUCCESS == error)
