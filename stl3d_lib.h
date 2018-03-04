@@ -114,8 +114,8 @@ stl_error_t
 stl_from_heightmap_uchar_file(
 	char *filename,
 	stl_origin_t origin,
-	unsigned int width,
-	unsigned int height,
+	unsigned int cols,
+	unsigned int rows,
 	double scale_pct,
 	double base_height,
 	double units_per_pixel,
@@ -128,8 +128,8 @@ stl_error_t
 stl_from_heightmap_uchar(
 	unsigned char *vals,
 	stl_origin_t origin,
-	unsigned int width,
-	unsigned int height,
+	unsigned int cols,
+	unsigned int rows,
 	double scale_pct,
 	double base_height,
 	double units_per_pixel,
@@ -142,8 +142,8 @@ stl_error_t
 stl_from_heightmap_char(
 	signed char *vals,
 	stl_origin_t origin,
-	unsigned int width,
-	unsigned int height,
+	unsigned int cols,
+	unsigned int rows,
 	double scale_pct,
 	double base_height,
 	double units_per_pixel,
@@ -160,8 +160,8 @@ stl_error_t
 stl_from_heightmap_double(
 	double *vals,
 	stl_origin_t origin,
-	unsigned int width,
-	unsigned int height,
+	unsigned int cols,
+	unsigned int rows,
 	double scale_pct,
 	double base_height,
 	double units_per_pixel,
