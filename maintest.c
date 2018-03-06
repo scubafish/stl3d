@@ -136,7 +136,7 @@ int main(int argc, char **argv)
 		unsigned char vals2[300*400];
 		memset(vals2, 0x05, 300*400);
 
-		error = stl_from_heightmap_uchar_file("..\\test_data\\manly_8bit_375_462.raw", STL_ORIGIN_BOTTOM_LEFT, 375, 462, 25.0, 2.0, 0.35, &stl);
+		error = stl_from_heightmap_uchar_file("..\\penguin_line.raw", STL_ORIGIN_BOTTOM_LEFT, 399, 399, 0.20, 0.1, 0.08, &stl);
 //		error = stl_from_heightmap_uchar(vals, STL_ORIGIN_TOP_LEFT, 3, 2, 100.0, 5, 100, &stl);
 //		error = stl_from_heightmap_uchar(vals2, STL_ORIGIN_TOP_LEFT, 300, 400, 100.0, 15, 0.10, &stl);
 	}
@@ -144,7 +144,7 @@ int main(int argc, char **argv)
 	if(STL_SUCCESS == error)
 	{
 		stl_print_stats(stl);
-		error = stl_write_file("manly.stl", stl);
+		error = stl_write_file("penguin_line.stl", stl);
 	}
 #endif
 

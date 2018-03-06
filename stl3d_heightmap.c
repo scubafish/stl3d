@@ -190,6 +190,8 @@ stl_from_heightmap_double(
 	double   min_z = 0.0;
 	double   min_z_scaled = 0.0;
 	double   *row = NULL;
+	double   **hmap = NULL;
+	double   *tmp = NULL;
 	stl_t    *stl = NULL;
 
 	if((NULL == vals) || (cols < 2) || (rows < 2) || (scale_pct <= 0.0) || (units_per_pixel <= 0.0) || (NULL == newstl))
@@ -206,6 +208,26 @@ stl_from_heightmap_double(
 		}
 	}
 
+	if(STL_SUCCESS == error)
+	{
+		hmap = (double **)malloc(rows * sizeof(hmap[0]));
+		if(NULL == hmap)
+		{
+			error = STL_LOG_ERR(STL_ERROR_MEMORY_ERROR);
+		}
+	}
+
+	/* Set up a 2D array of the array of heightmap vals, to make referenceing
+	 * them simpler in the code
+	 */
+	if(STL_SUCCESS == error)
+	{
+		for(r = 0; r < rows; r++)
+		{
+			hmap[r] = &vals[r * cols];
+		}
+	}
+
 	/* If the origin is top left then we need to swap the rows.
 	 * STL origin is bottom left
 	 */
@@ -216,6 +238,10 @@ stl_from_heightmap_double(
 			memcpy(row,               &(vals[i * cols]), cols * sizeof(row[0]));
 			memcpy(&(vals[i * cols]), &(vals[r * cols]), cols * sizeof(row[0]));
 			memcpy(&(vals[r * cols]), row,               cols * sizeof(row[0]));
+
+			tmp = hmap[i];
+			hmap[i] = hmap[r];
+			hmap[r] = tmp;
 		}
 	}
 
@@ -254,7 +280,7 @@ stl_from_heightmap_double(
 	if(STL_SUCCESS == error)
 	{
 		/* Find the lowest point in the heightmap */
-		min_z = vals[0];
+		min_z = hmap[0][0];
 
 		for(i = 0; i < cols * rows; i++)
 		{
@@ -543,6 +569,12 @@ stl_from_heightmap_double(
 	{
 		free(row);
 		row = NULL;
+	}
+
+	if(NULL != hmap)
+	{
+		free(hmap);
+		hmap = NULL;
 	}
 
 	if(STL_SUCCESS != error)
