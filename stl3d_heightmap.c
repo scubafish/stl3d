@@ -77,7 +77,7 @@ stl_from_heightmap_uchar_file(
 
 stl_error_t
 stl_from_heightmap_uchar(
-	unsigned char *vals,
+	const unsigned char *vals,
 	stl_origin_t origin,
 	unsigned int cols,
 	unsigned int rows,
@@ -123,7 +123,7 @@ stl_from_heightmap_uchar(
 
 stl_error_t
 stl_from_heightmap_char(
-	signed char *vals,
+	const signed char *vals,
 	stl_origin_t origin,
 	unsigned int cols,
 	unsigned int rows,
