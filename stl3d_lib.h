@@ -158,7 +158,7 @@ stl_from_heightmap_char(
  */
 stl_error_t
 stl_from_heightmap_double(
-	double *vals,
+	const double *vals,
 	stl_origin_t origin,
 	unsigned int cols,
 	unsigned int rows,

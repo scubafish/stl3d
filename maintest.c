@@ -144,8 +144,20 @@ int main(int argc, char **argv)
 	if(STL_SUCCESS == error)
 	{
 		stl_print_stats(stl);
-		error = stl_write_file("manly.stl", stl);
+		error = stl_write_file("manly_topleft.stl", stl);
 	}
+
+	if(STL_SUCCESS == error)
+	{
+		error = stl_from_heightmap_uchar_file("..\\test_data\\manly_8bit_375_462.raw", STL_ORIGIN_BOTTOM_LEFT, 375, 462, 100.0, 2.0, 1, &stl);
+	}
+
+	if(STL_SUCCESS == error)
+	{
+		stl_print_stats(stl);
+		error = stl_write_file("manly_bottomleft.stl", stl);
+	}
+
 #endif
 
 	if(STL_SUCCESS == error)

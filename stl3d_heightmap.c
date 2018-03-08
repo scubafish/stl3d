@@ -171,7 +171,7 @@ stl_from_heightmap_char(
  */
 stl_error_t
 stl_from_heightmap_double(
-	double *vals,
+	const double *vals,
 	stl_origin_t origin,
 	unsigned int cols,
 	unsigned int rows,
@@ -187,31 +187,21 @@ stl_from_heightmap_double(
 	unsigned int c = 0;
 	unsigned int r = 0;
 	unsigned int f = 0;
-	double   min_z = 0.0;
-	double   min_z_scaled = 0.0;
-	double   *row = NULL;
-	double   **hmap = NULL;
-	double   *tmp = NULL;
-	stl_t    *stl = NULL;
+	double       min_z = 0.0;
+	double       min_z_scaled = 0.0;
+	double const **hmap = NULL;
+	const double *tmp = NULL;
+	stl_t        *stl = NULL;
 
 	if((NULL == vals) || (cols < 2) || (rows < 2) || (scale_pct <= 0.0) || (units_per_pixel <= 0.0) || (NULL == newstl))
 	{
 		error = STL_LOG_ERR(STL_ERROR_INVALID_ARG);
 	}
 
-	if(STL_SUCCESS == error)
-	{
-		row = (double *)malloc(cols * sizeof(row[0]));
-		if(NULL == row)
-		{
-			error = STL_LOG_ERR(STL_ERROR_MEMORY_ERROR);
-		}
-	}
-
 	/* Create the array used for the 2d array representation */
 	if(STL_SUCCESS == error)
 	{
-		hmap = (double **)malloc(rows * sizeof(hmap[0]));
+		hmap = (double const **)malloc(rows * sizeof(hmap[0]));
 		if(NULL == hmap)
 		{
 			error = STL_LOG_ERR(STL_ERROR_MEMORY_ERROR);
@@ -236,10 +226,6 @@ stl_from_heightmap_double(
 	{
 		for(i = 0, r = rows - 1; i < rows / 2; i++, r--)
 		{
-			memcpy(row,               &(vals[i * cols]), cols * sizeof(row[0]));
-			memcpy(&(vals[i * cols]), &(vals[r * cols]), cols * sizeof(row[0]));
-			memcpy(&(vals[r * cols]), row,               cols * sizeof(row[0]));
-
 			tmp = hmap[i];
 			hmap[i] = hmap[r];
 			hmap[r] = tmp;
@@ -569,15 +555,9 @@ stl_from_heightmap_double(
 	}
 
 	/* Cleanup */
-	if(NULL != row)
-	{
-		free(row);
-		row = NULL;
-	}
-
 	if(NULL != hmap)
 	{
-		free(hmap);
+		free((void *)hmap);
 		hmap = NULL;
 	}
 
