@@ -5,6 +5,8 @@
 
 #include "stl3d_lib.h"
 
+#define _GEN_SMALLER_BOTTOM_MESH
+
 stl_error_t
 stl_from_heightmap_uchar_file(
 	char *filename,
@@ -192,6 +194,10 @@ stl_from_heightmap_double(
 	double const **hmap = NULL;
 	const double *tmp = NULL;
 	stl_t        *stl = NULL;
+#ifdef _GEN_SMALLER_BOTTOM_MESH
+	double       center_x = 0.0;
+	double       center_y = 0.0;
+#endif
 
 	if((NULL == vals) || (cols < 2) || (rows < 2) || (scale_pct <= 0.0) || (units_per_pixel <= 0.0) || (NULL == newstl))
 	{
@@ -234,14 +240,36 @@ stl_from_heightmap_double(
 
 	if(STL_SUCCESS == error)
 	{
+#if 0
+		unsigned int count1 = 0;
+		unsigned int count2 = 0;
+#endif
+
 		/* Calculate how many fascents we will need for this STL file
 		 */
 
 		/* This many for the top mesh */
 		fascet_count = (cols - 1) * (rows - 1) * 2;
 
-		/* This many for the bottom mesh */
+		/* This many for the bottom mesh
+		 *
+		 * TODO - This can be reduced from:
+		 * ((cols - 1) * (rows - 1) * 2) down to ((cols - 1) * 2) + ((rows - 1) * 2)
+		 *
+		 * By taking a center point of the grid and connecting all outter points to it. So for
+		 * a 375x462 map the bottom mesh would go from 344828 triangles down to 1670.
+		 */
+#ifdef _GEN_SMALLER_BOTTOM_MESH
+		fascet_count += ((cols - 1) * 2) + ((rows - 1) * 2);
+#else
 		fascet_count += (cols - 1) * (rows - 1) * 2;
+#endif
+
+		/* Figuring out the number of triangles for both mesh sizes */
+#if 0
+		count1 = (cols - 1) * (rows - 1) * 2;
+		count2 = ((cols - 1) * 2) + ((rows - 1) * 2);
+#endif
 
 		/* This many for the top side */
 		fascet_count += (cols - 1) * 2;
@@ -332,6 +360,102 @@ stl_from_heightmap_double(
 		}
 
 		/* Generate the bottom mesh */
+#ifdef _GEN_SMALLER_BOTTOM_MESH
+
+		center_x = ((cols - 1) / 2) * units_per_pixel;
+		center_y = ((rows - 1) / 2) * units_per_pixel;
+
+		/* Generate left and right side triangles */
+		for(r = 0; r < rows - 1; r++)
+		{
+			/* Left triangle
+			 */
+
+			/* point 1 */
+			stl->facets[f].verticies[0].x = (float)(0 * units_per_pixel);
+			stl->facets[f].verticies[0].y = (float)(r * units_per_pixel);
+			stl->facets[f].verticies[0].z = (float)(min_z_scaled - base_height);
+
+			/* point 6 */
+			stl->facets[f].verticies[1].x = (float)(0 * units_per_pixel);
+			stl->facets[f].verticies[1].y = (float)((r + 1) * units_per_pixel);
+			stl->facets[f].verticies[1].z = (float)(min_z_scaled - base_height);
+
+			/* point center */
+			stl->facets[f].verticies[2].x = (float)center_x;
+			stl->facets[f].verticies[2].y = (float)center_y;
+			stl->facets[f].verticies[2].z = (float)(min_z_scaled - base_height);
+
+			/* TODO - generate unit vector */
+
+			/* Right triangle
+			 */
+
+			/* point 10 */
+			stl->facets[f+1].verticies[0].x = (float)((cols - 1) * units_per_pixel);
+			stl->facets[f+1].verticies[0].y = (float)((r + 1) * units_per_pixel);
+			stl->facets[f+1].verticies[0].z = (float)(min_z_scaled - base_height);
+
+			/* point 5 */
+			stl->facets[f+1].verticies[1].x = (float)((cols - 1) * units_per_pixel);
+			stl->facets[f+1].verticies[1].y = (float)(r * units_per_pixel);
+			stl->facets[f+1].verticies[1].z = (float)(min_z_scaled - base_height);
+
+			/* point center */
+			stl->facets[f+1].verticies[2].x = (float)center_x;
+			stl->facets[f+1].verticies[2].y = (float)center_y;
+			stl->facets[f+1].verticies[2].z = (float)(min_z_scaled - base_height);
+
+			/* TODO - generate unit vector */
+
+			f += 2;
+		}
+
+		/* Generate top and bottom triangles */
+		for(c = 0; c < cols - 1; c++)
+		{
+			/* Top triangle
+			 */
+			/* point 2 */
+			stl->facets[f].verticies[0].x = (float)((c + 1) * units_per_pixel);
+			stl->facets[f].verticies[0].y = (float)(0 * units_per_pixel);
+			stl->facets[f].verticies[0].z = (float)(min_z_scaled - base_height);
+
+			/* point 1 */
+			stl->facets[f].verticies[1].x = (float)(c * units_per_pixel);
+			stl->facets[f].verticies[1].y = (float)(0 * units_per_pixel);
+			stl->facets[f].verticies[1].z = (float)(min_z_scaled - base_height);
+
+			/* point center */
+			stl->facets[f].verticies[2].x = (float)center_x;
+			stl->facets[f].verticies[2].y = (float)center_y;
+			stl->facets[f].verticies[2].z = (float)(min_z_scaled - base_height);
+
+			/* TODO - generate unit vector */
+
+			/* Bottom triangle
+			 */
+
+			/* point 21 */
+			stl->facets[f+1].verticies[0].x = (float)(c * units_per_pixel);
+			stl->facets[f+1].verticies[0].y = (float)((rows - 1) * units_per_pixel);
+			stl->facets[f+1].verticies[0].z = (float)(min_z_scaled - base_height);
+
+			/* point 22 */
+			stl->facets[f+1].verticies[1].x = (float)((c + 1) * units_per_pixel);
+			stl->facets[f+1].verticies[1].y = (float)((rows - 1) * units_per_pixel);
+			stl->facets[f+1].verticies[1].z = (float)(min_z_scaled - base_height);
+
+			/* point center */
+			stl->facets[f+1].verticies[2].x = (float)center_x;
+			stl->facets[f+1].verticies[2].y = (float)center_y;
+			stl->facets[f+1].verticies[2].z = (float)(min_z_scaled - base_height);
+
+			/* TODO - generate unit vector */
+
+			f += 2;
+		}
+#else
 		for(c = 0; c < cols - 1; c++)
 		{
 			for(r = 0; r < rows - 1; r++)
@@ -378,6 +502,7 @@ stl_from_heightmap_double(
 				f+= 2;
 			}
 		}
+#endif
 
 		/* Generate the top side mesh */
 		for(c = 0; c < cols - 1; c++)
