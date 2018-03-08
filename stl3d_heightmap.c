@@ -208,6 +208,7 @@ stl_from_heightmap_double(
 		}
 	}
 
+	/* Create the array used for the 2d array representation */
 	if(STL_SUCCESS == error)
 	{
 		hmap = (double **)malloc(rows * sizeof(hmap[0]));
@@ -218,7 +219,7 @@ stl_from_heightmap_double(
 	}
 
 	/* Set up a 2D array of the array of heightmap vals, to make referenceing
-	 * them simpler in the code
+	 * them simpler later
 	 */
 	if(STL_SUCCESS == error)
 	{
@@ -282,11 +283,14 @@ stl_from_heightmap_double(
 		/* Find the lowest point in the heightmap */
 		min_z = hmap[0][0];
 
-		for(i = 0; i < cols * rows; i++)
+		for(r = 0; r < rows; r++)
 		{
-			if(vals[i] < min_z)
+			for(c = 0; c < cols; c++)
 			{
-				min_z = vals[i];
+				if(hmap[r][c] < min_z)
+				{
+					min_z = hmap[r][c];
+				}
 			}
 		}
 
@@ -295,26 +299,26 @@ stl_from_heightmap_double(
 		f = 0;
 
 		/* Generate the top mesh */
-		for(c = 0; c < cols - 1; c++)
+		for(r = 0; r < rows - 1; r++)
 		{
-			for(r = 0; r < rows - 1; r++)
+			for(c = 0; c < cols - 1; c++)
 			{
 				/* Triangle 1
 				 */
 				/* point 1 */
 				stl->facets[f].verticies[0].x = (float)(c * units_per_pixel);
 				stl->facets[f].verticies[0].y = (float)(r * units_per_pixel);
-				stl->facets[f].verticies[0].z = (float)((vals[(cols * r) + c] * (scale_pct / 100.0)) + base_height);
+				stl->facets[f].verticies[0].z = (float)((hmap[r][c] * (scale_pct / 100.0)) + base_height);
 
 				/* point 2 */
 				stl->facets[f].verticies[1].x = (float)((c + 1) * units_per_pixel);
 				stl->facets[f].verticies[1].y = (float)(r * units_per_pixel);
-				stl->facets[f].verticies[1].z = (float)((vals[(cols * r) + (c + 1)] * (scale_pct / 100.0)) + base_height);
+				stl->facets[f].verticies[1].z = (float)((hmap[r][c + 1] * (scale_pct / 100.0)) + base_height);
 
 				/* point 6 */
 				stl->facets[f].verticies[2].x = (float)(c * units_per_pixel);
 				stl->facets[f].verticies[2].y = (float)((r + 1) * units_per_pixel);
-				stl->facets[f].verticies[2].z = (float) ((vals[(cols * (r + 1)) + c] * (scale_pct / 100.0)) + base_height);
+				stl->facets[f].verticies[2].z = (float)((hmap[r + 1][c] * (scale_pct / 100.0)) + base_height);
 
 				/* TODO - generate unit vector */
 
@@ -323,17 +327,17 @@ stl_from_heightmap_double(
 				/* point 2 */
 				stl->facets[f+1].verticies[0].x = (float)((c + 1) * units_per_pixel);
 				stl->facets[f+1].verticies[0].y = (float)(r * units_per_pixel);
-				stl->facets[f+1].verticies[0].z = (float)((vals[(cols * r) + (c + 1)] * (scale_pct / 100.0)) + base_height);
+				stl->facets[f+1].verticies[0].z = (float)((hmap[r][c + 1] * (scale_pct / 100.0)) + base_height);
 
 				/* point 7 */
 				stl->facets[f+1].verticies[1].x = (float)((c + 1) * units_per_pixel);
 				stl->facets[f+1].verticies[1].y = (float)((r + 1) * units_per_pixel);
-				stl->facets[f+1].verticies[1].z = (float)((vals[(cols * (r + 1)) + (c + 1)] * (scale_pct / 100.0)) + base_height);
+				stl->facets[f+1].verticies[1].z = (float)((hmap[r + 1][c + 1] * (scale_pct / 100.0)) + base_height);
 
 				/* point 6 */
 				stl->facets[f+1].verticies[2].x = (float)(c * units_per_pixel);
 				stl->facets[f+1].verticies[2].y = (float)((r + 1) * units_per_pixel);
-				stl->facets[f+1].verticies[2].z = (float)((vals[(cols * (r + 1)) + c] * (scale_pct / 100.0)) + base_height);
+				stl->facets[f+1].verticies[2].z = (float)((hmap[r + 1][c] * (scale_pct / 100.0)) + base_height);
 
 				/* TODO - generate unit vector */
 
@@ -371,17 +375,17 @@ stl_from_heightmap_double(
 				/* point 2 */
 				stl->facets[f+1].verticies[0].x = (float)((c + 1) * units_per_pixel);
 				stl->facets[f+1].verticies[0].y = (float)(r * units_per_pixel);
-				stl->facets[f+1].verticies[0].z = (float)(float)(min_z_scaled - base_height);
+				stl->facets[f+1].verticies[0].z = (float)(min_z_scaled - base_height);
 
 				/* point 6 */
 				stl->facets[f+1].verticies[1].x = (float)(c * units_per_pixel);
 				stl->facets[f+1].verticies[1].y = (float)((r + 1) * units_per_pixel);
-				stl->facets[f+1].verticies[1].z = (float)(float)(min_z_scaled - base_height);
+				stl->facets[f+1].verticies[1].z = (float)(min_z_scaled - base_height);
 
 				/* point 7 */
 				stl->facets[f+1].verticies[2].x = (float)((c + 1) * units_per_pixel);
 				stl->facets[f+1].verticies[2].y = (float)((r + 1) * units_per_pixel);
-				stl->facets[f+1].verticies[2].z = (float)(float)(min_z_scaled - base_height);
+				stl->facets[f+1].verticies[2].z = (float)(min_z_scaled - base_height);
 
 				/* TODO - generate unit vector */
 
@@ -397,7 +401,7 @@ stl_from_heightmap_double(
 			/* point 1 top */
 			stl->facets[f].verticies[0].x = (float)(c * units_per_pixel);
 			stl->facets[f].verticies[0].y = (float)(0 * units_per_pixel);
-			stl->facets[f].verticies[0].z = (float)((vals[(cols * 0) + c] * (scale_pct / 100.0)) + base_height);
+			stl->facets[f].verticies[0].z = (float)((hmap[0][c] * (scale_pct / 100.0)) + base_height);
 
 			/* point 1 bottom */
 			stl->facets[f].verticies[1].x = (float)(c * units_per_pixel);
@@ -407,7 +411,7 @@ stl_from_heightmap_double(
 			/* point 2 top */
 			stl->facets[f].verticies[2].x = (float)((c + 1) * units_per_pixel);
 			stl->facets[f].verticies[2].y = (float)(0 * units_per_pixel);
-			stl->facets[f].verticies[2].z = (float)((vals[(cols * 0) + (c + 1)] * (scale_pct / 100.0)) + base_height);
+			stl->facets[f].verticies[2].z = (float)((hmap[0][c + 1] * (scale_pct / 100.0)) + base_height);
 
 			/* TODO - generate unit vector */
 			/* Triangle 2
@@ -415,7 +419,7 @@ stl_from_heightmap_double(
 			/* point 2 top */
 			stl->facets[f+1].verticies[0].x = (float)((c + 1) * units_per_pixel);
 			stl->facets[f+1].verticies[0].y = (float)(0 * units_per_pixel);
-			stl->facets[f+1].verticies[0].z = (float)((vals[(cols * 0) + (c + 1)] * (scale_pct / 100.0)) + base_height);
+			stl->facets[f+1].verticies[0].z = (float)((hmap[0][c + 1] * (scale_pct / 100.0)) + base_height);
 
 			/* point 1 bottom */
 			stl->facets[f+1].verticies[1].x = (float)(c * units_per_pixel);
@@ -440,12 +444,12 @@ stl_from_heightmap_double(
 			/* point 21 top */
 			stl->facets[f].verticies[0].x = (float)(c * units_per_pixel);
 			stl->facets[f].verticies[0].y = (float)((rows - 1) * units_per_pixel);
-			stl->facets[f].verticies[0].z = (float)((vals[(cols * (rows - 1)) + c] * (scale_pct / 100.0)) + base_height);
+			stl->facets[f].verticies[0].z = (float)((hmap[rows - 1][c] * (scale_pct / 100.0)) + base_height);
 
 			/* point 22 top */
 			stl->facets[f].verticies[1].x = (float)((c + 1) * units_per_pixel);
 			stl->facets[f].verticies[1].y = (float)((rows - 1) * units_per_pixel);
-			stl->facets[f].verticies[1].z = (float)((vals[(cols * (rows - 1)) + (c + 1)] * (scale_pct / 100.0)) + base_height);
+			stl->facets[f].verticies[1].z = (float)((hmap[rows - 1][c + 1] * (scale_pct / 100.0)) + base_height);
 
 			/* point 21 bottom */
 			stl->facets[f].verticies[2].x = (float)(c * units_per_pixel);
@@ -459,7 +463,7 @@ stl_from_heightmap_double(
 			/* point 22 top */
 			stl->facets[f+1].verticies[0].x = (float)((c + 1) * units_per_pixel);
 			stl->facets[f+1].verticies[0].y = (float)((rows - 1) * units_per_pixel);
-			stl->facets[f+1].verticies[0].z = (float)((vals[(cols * (rows - 1)) + (c + 1)] * (scale_pct / 100.0)) + base_height);
+			stl->facets[f+1].verticies[0].z = (float)((hmap[rows - 1][c + 1] * (scale_pct / 100.0)) + base_height);
 
 			/* point 22 bottom */
 			stl->facets[f+1].verticies[1].x = (float)((c + 1) * units_per_pixel);
@@ -484,12 +488,12 @@ stl_from_heightmap_double(
 			/* point 1 top */
 			stl->facets[f].verticies[0].x = (float)(0 * units_per_pixel);  /* 0 -> c */
 			stl->facets[f].verticies[0].y = (float)(r * units_per_pixel);
-			stl->facets[f].verticies[0].z = (float)((vals[(cols * r) + 0] * (scale_pct / 100.0)) + base_height);  /* 0 -> c */
+			stl->facets[f].verticies[0].z = (float)((hmap[r][0] * (scale_pct / 100.0)) + base_height);  /* 0 -> c */
 
 			/* point 6 top */
 			stl->facets[f].verticies[1].x = (float)(0 * units_per_pixel);  /* 0 -> c */
 			stl->facets[f].verticies[1].y = (float)((r + 1) * units_per_pixel);
-			stl->facets[f].verticies[1].z = (float)((vals[(cols * (r + 1)) + 0] * (scale_pct / 100.0)) + base_height);  /* 0 -> c */
+			stl->facets[f].verticies[1].z = (float)((hmap[r + 1][0] * (scale_pct / 100.0)) + base_height);  /* 0 -> c */
 
 			/* point 1 bottom */
 			stl->facets[f].verticies[2].x = (float)(0 * units_per_pixel);  /* 0 -> c */
@@ -503,7 +507,7 @@ stl_from_heightmap_double(
 			/* point 6 top */
 			stl->facets[f+1].verticies[0].x = (float)(0 * units_per_pixel);  /* 0 -> c */
 			stl->facets[f+1].verticies[0].y = (float)((r + 1) * units_per_pixel);
-			stl->facets[f+1].verticies[0].z = (float)((vals[(cols * (r + 1)) + 0] * (scale_pct / 100.0)) + base_height);  /* 0 -> c */
+			stl->facets[f+1].verticies[0].z = (float)((hmap[r + 1][0] * (scale_pct / 100.0)) + base_height);  /* 0 -> c */
 
 			/* point 6 bottom */
 			stl->facets[f+1].verticies[1].x = (float)(0 * units_per_pixel);  /* 0 -> c */
@@ -528,7 +532,7 @@ stl_from_heightmap_double(
 			/* point 5 top */
 			stl->facets[f].verticies[0].x = (float)((cols - 1) * units_per_pixel);
 			stl->facets[f].verticies[0].y = (float)(r * units_per_pixel);
-			stl->facets[f].verticies[0].z = (float)((vals[(cols * r) + (cols - 1)] * (scale_pct / 100.0)) + base_height);
+			stl->facets[f].verticies[0].z = (float)((hmap[r][cols - 1] * (scale_pct / 100.0)) + base_height);
 
 			/* point 5 bottom */
 			stl->facets[f].verticies[1].x = (float)((cols - 1) * units_per_pixel);
@@ -538,7 +542,7 @@ stl_from_heightmap_double(
 			/* point 10 top */
 			stl->facets[f].verticies[2].x = (float)((cols - 1) * units_per_pixel);
 			stl->facets[f].verticies[2].y = (float)((r + 1) * units_per_pixel);
-			stl->facets[f].verticies[2].z = (float)((vals[(cols * (r + 1)) + (cols - 1)] * (scale_pct / 100.0)) + base_height);
+			stl->facets[f].verticies[2].z = (float)((hmap[r + 1][cols - 1] * (scale_pct / 100.0)) + base_height);
 
 			/* TODO - generate unit vector */
 			/* Triangle 2
@@ -546,7 +550,7 @@ stl_from_heightmap_double(
 			/* point 10 top */
 			stl->facets[f+1].verticies[0].x = (float)((cols - 1) * units_per_pixel);
 			stl->facets[f+1].verticies[0].y = (float)((r + 1) * units_per_pixel);
-			stl->facets[f+1].verticies[0].z = (float)((vals[(cols * (r + 1)) + (cols - 1)] * (scale_pct / 100.0)) + base_height);
+			stl->facets[f+1].verticies[0].z = (float)((hmap[r + 1][cols - 1] * (scale_pct / 100.0)) + base_height);
 
 			/* point 5 bottom */
 			stl->facets[f+1].verticies[1].x = (float)((cols - 1) * units_per_pixel);
