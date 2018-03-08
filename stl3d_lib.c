@@ -319,6 +319,11 @@ stl_error_t stl_scale(double pct_x, double pct_y, double pct_z, stl_t *stl)
 			stl->facets[i].verticies[2].x *= (float)scale_x;
 			stl->facets[i].verticies[2].y *= (float)scale_y;
 			stl->facets[i].verticies[2].z *= (float)scale_z;
+
+			/* TODO - recalc the normal vector when scaling */
+			stl->facets[i].normal.x = 0.0;
+			stl->facets[i].normal.y = 0.0;
+			stl->facets[i].normal.z = 0.0;
 		}
 	}
 
