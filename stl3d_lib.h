@@ -49,22 +49,22 @@ typedef struct
 	float x;
 	float y;
 	float z;
-} vertex_t;
+} stl_vertex_t;
 
 typedef struct
 {
-	vertex_t normal;
-	vertex_t verticies[3];
+	stl_vertex_t normal;
+	stl_vertex_t verticies[3];
 
 	/* Attribute byte count */
 	unsigned short abc;
-} facet_t;
+} stl_facet_t;
 
 typedef struct
 {
 	unsigned char header[STL_HEADER_SIZE];
 	unsigned int facets_count;
-	facet_t  *facets;
+	stl_facet_t  *facets;
 } stl_t;
 
 
@@ -176,6 +176,7 @@ void stl_print(stl_t *stl);
  */
 void stl_print_stats(stl_t *stl);
 
+stl_error_t stl_gen_normal_vector(stl_vertex_t *verticies, stl_vertex_t *normal);
 
 #ifdef __cplusplus
 }

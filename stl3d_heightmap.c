@@ -334,7 +334,7 @@ stl_from_heightmap_double(
 				stl->facets[f].verticies[2].y = (float)((r + 1) * units_per_pixel);
 				stl->facets[f].verticies[2].z = (float)((hmap[r + 1][c] * (scale_pct / 100.0)) + base_height);
 
-				/* TODO - generate unit vector */
+				stl_gen_normal_vector(stl->facets[f].verticies, &stl->facets[f].normal);
 
 				/* Triangle 2
 				 */
@@ -353,7 +353,7 @@ stl_from_heightmap_double(
 				stl->facets[f+1].verticies[2].y = (float)((r + 1) * units_per_pixel);
 				stl->facets[f+1].verticies[2].z = (float)((hmap[r + 1][c] * (scale_pct / 100.0)) + base_height);
 
-				/* TODO - generate unit vector */
+				stl_gen_normal_vector(stl->facets[f+1].verticies, &stl->facets[f+1].normal);
 
 				f+=2;
 			}
@@ -386,7 +386,7 @@ stl_from_heightmap_double(
 			stl->facets[f].verticies[2].y = (float)center_y;
 			stl->facets[f].verticies[2].z = (float)(min_z_scaled - base_height);
 
-			/* TODO - generate unit vector */
+			stl_gen_normal_vector(stl->facets[f].verticies, &stl->facets[f].normal);
 
 			/* Right triangle
 			 */
@@ -406,7 +406,7 @@ stl_from_heightmap_double(
 			stl->facets[f+1].verticies[2].y = (float)center_y;
 			stl->facets[f+1].verticies[2].z = (float)(min_z_scaled - base_height);
 
-			/* TODO - generate unit vector */
+			stl_gen_normal_vector(stl->facets[f+1].verticies, &stl->facets[f+1].normal);
 
 			f += 2;
 		}
@@ -431,7 +431,7 @@ stl_from_heightmap_double(
 			stl->facets[f].verticies[2].y = (float)center_y;
 			stl->facets[f].verticies[2].z = (float)(min_z_scaled - base_height);
 
-			/* TODO - generate unit vector */
+			stl_gen_normal_vector(stl->facets[f].verticies, &stl->facets[f].normal);
 
 			/* Bottom triangle
 			 */
@@ -451,7 +451,7 @@ stl_from_heightmap_double(
 			stl->facets[f+1].verticies[2].y = (float)center_y;
 			stl->facets[f+1].verticies[2].z = (float)(min_z_scaled - base_height);
 
-			/* TODO - generate unit vector */
+			stl_gen_normal_vector(stl->facets[f+1].verticies, &stl->facets[f+1].normal);
 
 			f += 2;
 		}
@@ -524,7 +524,8 @@ stl_from_heightmap_double(
 			stl->facets[f].verticies[2].y = (float)(0 * units_per_pixel);
 			stl->facets[f].verticies[2].z = (float)((hmap[0][c + 1] * (scale_pct / 100.0)) + base_height);
 
-			/* TODO - generate unit vector */
+			stl_gen_normal_vector(stl->facets[f].verticies, &stl->facets[f].normal);
+
 			/* Triangle 2
 			 */
 			/* point 2 top */
@@ -542,7 +543,7 @@ stl_from_heightmap_double(
 			stl->facets[f+1].verticies[2].y = (float)(0 * units_per_pixel);
 			stl->facets[f+1].verticies[2].z = (float)(min_z_scaled - base_height);
 
-			/* TODO - generate unit vector */
+			stl_gen_normal_vector(stl->facets[f+1].verticies, &stl->facets[f+1].normal);
 
 			f+= 2;
 		}
@@ -567,7 +568,7 @@ stl_from_heightmap_double(
 			stl->facets[f].verticies[2].y = (float)((rows - 1) * units_per_pixel);
 			stl->facets[f].verticies[2].z = (float)(min_z_scaled - base_height);
 
-			/* TODO - generate unit vector */
+			stl_gen_normal_vector(stl->facets[f].verticies, &stl->facets[f].normal);
 
 			/* Triangle 2
 			 */
@@ -586,7 +587,7 @@ stl_from_heightmap_double(
 			stl->facets[f+1].verticies[2].y = (float)((rows - 1) * units_per_pixel);
 			stl->facets[f+1].verticies[2].z = (float)(min_z_scaled - base_height);
 
-			/* TODO - generate unit vector */
+			stl_gen_normal_vector(stl->facets[f+1].verticies, &stl->facets[f+1].normal);
 
 			f+= 2;
 		}
@@ -611,7 +612,7 @@ stl_from_heightmap_double(
 			stl->facets[f].verticies[2].y = (float)(r * units_per_pixel);
 			stl->facets[f].verticies[2].z = (float)(min_z_scaled - base_height);
 
-			/* TODO - generate unit vector */
+			stl_gen_normal_vector(stl->facets[f].verticies, &stl->facets[f].normal);
 
 			/* Triangle 2
 			 */
@@ -630,7 +631,7 @@ stl_from_heightmap_double(
 			stl->facets[f+1].verticies[2].y = (float)(r * units_per_pixel);
 			stl->facets[f+1].verticies[2].z = (float)(min_z_scaled - base_height);
 
-			/* TODO - generate unit vector */
+			stl_gen_normal_vector(stl->facets[f+1].verticies, &stl->facets[f+1].normal);
 
 			f+= 2;
 		}
@@ -655,7 +656,8 @@ stl_from_heightmap_double(
 			stl->facets[f].verticies[2].y = (float)((r + 1) * units_per_pixel);
 			stl->facets[f].verticies[2].z = (float)((hmap[r + 1][cols - 1] * (scale_pct / 100.0)) + base_height);
 
-			/* TODO - generate unit vector */
+			stl_gen_normal_vector(stl->facets[f].verticies, &stl->facets[f].normal);
+
 			/* Triangle 2
 			 */
 			/* point 10 top */
@@ -673,7 +675,7 @@ stl_from_heightmap_double(
 			stl->facets[f+1].verticies[2].y = (float)((r + 1) * units_per_pixel);
 			stl->facets[f+1].verticies[2].z = (float)(min_z_scaled - base_height);
 
-			/* TODO - generate unit vector */
+			stl_gen_normal_vector(stl->facets[f+1].verticies, &stl->facets[f+1].normal);
 
 			f+= 2;
 		}

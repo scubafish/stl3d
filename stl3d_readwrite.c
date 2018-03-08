@@ -74,7 +74,7 @@ static stl_error_t stl_unpack_le16(const unsigned short val, unsigned char *buff
 	return STL_LOG_ERR(error);
 }
 
-static stl_error_t stl_read_next_vertex(FILE *fp, vertex_t *vertex)
+static stl_error_t stl_read_next_vertex(FILE *fp, stl_vertex_t *vertex)
 {
 	stl_error_t error = STL_SUCCESS;
 	int         res = 0;
@@ -104,7 +104,7 @@ static stl_error_t stl_read_next_vertex(FILE *fp, vertex_t *vertex)
 	return STL_LOG_ERR(error);
 }
 
-static stl_error_t stl_read_next_facet(FILE *fp, facet_t *facet)
+static stl_error_t stl_read_next_facet(FILE *fp, stl_facet_t *facet)
 {
 	stl_error_t   error = STL_SUCCESS;
 	int           res = 0;
@@ -219,7 +219,7 @@ stl_error_t stl_read_file(char *input_file, stl_t **stl_new)
 	{
 		stl->facets_count = stl_pack_le32(uint32_bytes);
 
-		stl->facets = (facet_t *)malloc(stl->facets_count * sizeof(facet_t));
+		stl->facets = (stl_facet_t *)malloc(stl->facets_count * sizeof(stl_facet_t));
 		if(NULL == stl->facets)
 		{
 			error = STL_LOG_ERR(STL_ERROR_MEMORY_ERROR);
@@ -262,7 +262,7 @@ stl_error_t stl_read_file(char *input_file, stl_t **stl_new)
 	return STL_LOG_ERR(error);
 }
 
-static stl_error_t stl_write_next_vertex(FILE *fp, vertex_t *vertex)
+static stl_error_t stl_write_next_vertex(FILE *fp, stl_vertex_t *vertex)
 {
 	stl_error_t error = STL_SUCCESS;
 	int         res = 0;
@@ -290,7 +290,7 @@ static stl_error_t stl_write_next_vertex(FILE *fp, vertex_t *vertex)
 
 }
 
-static stl_error_t stl_write_next_facet(FILE *fp, facet_t *facet)
+static stl_error_t stl_write_next_facet(FILE *fp, stl_facet_t *facet)
 {
 	stl_error_t   error = STL_SUCCESS;
 	int           res = 0;

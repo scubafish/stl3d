@@ -162,7 +162,7 @@ stl_error_t stl_new(stl_t **stl_new, unsigned int fascets_count)
 
 		stl->facets_count = fascets_count;
 
-		stl->facets = (facet_t *)malloc(stl->facets_count * sizeof(facet_t));
+		stl->facets = (stl_facet_t *)malloc(stl->facets_count * sizeof(stl_facet_t));
 		if(NULL == stl->facets)
 		{
 			error = STL_LOG_ERR(STL_ERROR_MEMORY_ERROR);
@@ -202,7 +202,7 @@ void stl_free(stl_t *stl)
 }
 
 
-static void _rot_vec_x(double cs, double sn, vertex_t *vertex)
+static void _rot_vec_x(double cs, double sn, stl_vertex_t *vertex)
 {
 	double py = 0.0;
 	double pz = 0.0;
@@ -215,7 +215,7 @@ static void _rot_vec_x(double cs, double sn, vertex_t *vertex)
 }
 
 
-static void _rot_vec_y(double cs, double sn, vertex_t *vertex)
+static void _rot_vec_y(double cs, double sn, stl_vertex_t *vertex)
 {
 	double px = 0.0;
 	double pz = 0.0;
@@ -227,7 +227,7 @@ static void _rot_vec_y(double cs, double sn, vertex_t *vertex)
 	vertex->z = (float)pz;
 }
 
-static void _rot_vec_z(double cs, double sn, vertex_t *vertex)
+static void _rot_vec_z(double cs, double sn, stl_vertex_t *vertex)
 {
 	double px = 0.0;
 	double py = 0.0;
@@ -326,6 +326,24 @@ stl_error_t stl_scale(double pct_x, double pct_y, double pct_z, stl_t *stl)
 			stl->facets[i].normal.z = 0.0;
 		}
 	}
+
+	return STL_LOG_ERR(error);
+}
+
+/* TODO - generate unit vector, you know using math and stuff
+ */
+stl_error_t stl_gen_normal_vector(stl_vertex_t *verticies, stl_vertex_t *normal)
+{
+	stl_error_t  error = STL_SUCCESS;
+
+	if((NULL == verticies) || (NULL == normal))
+	{
+		error = STL_LOG_ERR(STL_ERROR_INVALID_ARG);
+	}
+
+	normal->x = 0.0;
+	normal->y = 0.0;
+	normal->z = 0.0;
 
 	return STL_LOG_ERR(error);
 }
